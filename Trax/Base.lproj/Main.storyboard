@@ -55,7 +55,7 @@
         <!--Image View Controller-->
         <scene sceneID="hDw-qZ-ogm">
             <objects>
-                <viewController id="A0U-YP-vOI" customClass="ImageViewController" customModule="Cassini" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="A0U-YP-vOI" customClass="ImageViewController" customModule="Trax" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="AKb-Wh-0TP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -132,6 +132,7 @@
                             <constraint firstItem="Dga-Ck-w7M" firstAttribute="leading" secondItem="lZT-Tl-2RX" secondAttribute="leading" constant="16" id="ORI-1b-q0B"/>
                             <constraint firstItem="Dga-Ck-w7M" firstAttribute="top" secondItem="rkq-CB-xHT" secondAttribute="top" id="P5e-Ej-Lhs"/>
                             <constraint firstItem="LtV-Fw-LSg" firstAttribute="leading" secondItem="rkq-CB-xHT" secondAttribute="leading" id="X1V-WF-QO6"/>
+                            <constraint firstItem="lZT-Tl-2RX" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="LtV-Fw-LSg" secondAttribute="bottom" id="asN-Js-bKc"/>
                             <constraint firstItem="lZT-Tl-2RX" firstAttribute="trailing" secondItem="rkq-CB-xHT" secondAttribute="trailing" constant="16" id="c0B-WG-5da"/>
                             <constraint firstItem="2oV-rA-D5C" firstAttribute="top" secondItem="LtV-Fw-LSg" secondAttribute="top" id="dU6-eV-S90"/>
                             <constraint firstItem="LtV-Fw-LSg" firstAttribute="leading" secondItem="2oV-rA-D5C" secondAttribute="trailing" constant="8" id="hqQ-OY-1GA"/>

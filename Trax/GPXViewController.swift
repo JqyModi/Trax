@@ -183,6 +183,8 @@ extension GPXViewController: MKMapViewDelegate {
                             //设置Popover的宽高包裹：UILayoutFittingCompressedSize | UILayoutFittingExpandedSize（尽量大）
                             let minSize = evc.view.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
                             evc.preferredContentSize = CGSize(width: Constants.EditWaypointPopoverWidth, height: minSize.height)
+                            //添加popoverPresentationController代理事件
+                            ppc.delegate = self
                         }
                         evc.waypointToEdit = waypoint
 //                        evc.title = waypoint.name
@@ -193,6 +195,21 @@ extension GPXViewController: MKMapViewDelegate {
     }
     
     
+}
+extension GPXViewController: UIPopoverPresentationControllerDelegate {
+    //设置Popover显示样式
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .overFullScreen
+    }
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        //重新配置显示控制器
+        let navCon = UINavigationController(rootViewController: controller.presentedViewController)
+        //设置高斯模糊背景
+        let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+        visualEffectView.frame = navCon.view.bounds
+        navCon.view.insertSubview(visualEffectView, at: 0)
+        return navCon
+    }
 }
 
 //扩展UIViewController：当带导航栏是获取视图内容ViewController
