@@ -7,6 +7,18 @@
 //
 
 import MapKit
+//创建子类扩展父类变量
+class EditableWaypoint: GPX.Waypoint {
+    override var coordinate: CLLocationCoordinate2D {
+        get {
+            return super.coordinate
+        }
+        set {
+            coordinate.latitude = newValue.latitude
+            coordinate.longitude = newValue.longitude
+        }
+    }
+}
 
 extension GPX.Waypoint: MKAnnotation {
     var coordinate: CLLocationCoordinate2D {
@@ -17,5 +29,24 @@ extension GPX.Waypoint: MKAnnotation {
     }
     var subTitle: String! {
         return info
+    }
+    
+    var thumbnailURL: NSURL? {
+        return getImageURLOfType(type: "thumbnail")
+    }
+    
+    var imageURL: NSURL? {
+        return getImageURLOfType(type: "large")
+    }
+    
+    func getImageURLOfType(type: String) -> NSURL? {
+        if links.count > 0 {
+            for link in links {
+                if link.type == type {
+                    return link.url as! NSURL
+                }
+            }
+        }
+        return nil
     }
 }
