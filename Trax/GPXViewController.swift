@@ -15,7 +15,7 @@ class GPXViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             //设置模式为卫星地图
-            mapView.mapType = .satellite
+            //mapView.mapType = .satellite
             mapView.delegate = self
         }
     }
@@ -60,6 +60,8 @@ class GPXViewController: UIViewController {
             let waypoint = EditableWaypoint(latitude: coordinate2D.latitude, longitude: coordinate2D.longitude)
             waypoint.name = "Dropped name"
             waypoint.info = "Dropped info"
+            //添加测试图片
+            waypoint.links.append(GPX.Link(href: "http://web.stanford.edu/class/cs193p/Images/Panorama.jpg"))
             //mapView上添加路点
             mapView.addAnnotation(waypoint)
         }
@@ -119,12 +121,9 @@ extension GPXViewController: MKMapViewDelegate {
             if annotation is EditableWaypoint {
                 view?.rightCalloutAccessoryView = UIButton.init(type: .detailDisclosure) as? UIButton
             }
+            //都需要显示详细信息
+            view?.detailCalloutAccessoryView = UILabel(frame: Constants.DetailCalloutFrame)
         }
-        
-//        if let waypoint = annotation as? EditableWaypoint {
-//            view?.detailCalloutAccessoryView = UILabel(frame: Constants.DetailCalloutFrame)
-//            view?.rightCalloutAccessoryView = UIButton.init(type: .detailDisclosure) as? UIButton
-//        }
         
         //设置路点可拖拽：X is X = Bool
         view?.isDraggable = annotation is EditableWaypoint
@@ -135,18 +134,47 @@ extension GPXViewController: MKMapViewDelegate {
     //选择标注视图回调
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if let waypoint = view.annotation as? GPX.Waypoint {
-            if let leftAccesoryView = view.leftCalloutAccessoryView as? UIButton {
-                //选择视图时设置图片内容
-                if let imageData = NSData(contentsOf: waypoint.thumbnailURL as! URL) {
-                    if let image = UIImage(data: imageData as Data) {
-                        leftAccesoryView.setImage(image, for: .normal)
+            if let editWaypoint = waypoint as? EditableWaypoint {
+                //新版Swift不能重写扩展的变量
+                if let url = editWaypoint.thumbnailURL1 {
+                    if view.leftCalloutAccessoryView == nil {
+                        view.leftCalloutAccessoryView = UIButton(frame: Constants.LeftCalloutFrame)
+                    }
+                    if let thumbnailImageButton = view.leftCalloutAccessoryView as? UIButton {
+                        //选择视图时设置图片内容
+                        DispatchQueue.global(qos: .userInitiated).async {
+                            if let imageData = NSData(contentsOf: url as! URL) {
+                                if let image = UIImage(data: imageData as Data) {
+                                    DispatchQueue.main.async {
+                                        thumbnailImageButton.setImage(image, for: .normal)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if let detailLabel = view.detailCalloutAccessoryView as? UILabel {
+                        detailLabel.text = waypoint.info
                     }
                 }
             }
-        }else if let waypoint = view.annotation as? EditableWaypoint {
-            if let detailAccesoryView = view.detailCalloutAccessoryView as? UILabel {
-                if let text = waypoint.info {
-                    detailAccesoryView.text = text
+            if let url = waypoint.thumbnailURL {
+                if view.leftCalloutAccessoryView == nil {
+                    view.leftCalloutAccessoryView = UIButton(frame: Constants.LeftCalloutFrame)
+                }
+                if let thumbnailImageButton = view.leftCalloutAccessoryView as? UIButton {
+                    //选择视图时设置图片内容
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        if let imageData = NSData(contentsOf: url as! URL) {
+                            if let image = UIImage(data: imageData as Data) {
+                                DispatchQueue.main.async {
+                                    thumbnailImageButton.setImage(image, for: .normal)
+                                }
+                            }
+                        }
+                    }
+                }
+                if let detailLabel = view.detailCalloutAccessoryView as? UILabel {
+                    detailLabel.text = waypoint.info
                 }
             }
         }
@@ -167,7 +195,10 @@ extension GPXViewController: MKMapViewDelegate {
         if let identifier = segue.identifier  {
             if identifier == Constants.ShowImageSegue {
                 if let waypoint = (sender as? MKAnnotationView)?.annotation as? GPX.Waypoint {
-                    if let ivc = segue.destination as? ImageViewController {
+                    //为内嵌有EbmedViewController的控制器准备Segue
+                    if let wivc = segue.destination.contentViewController as? WaypointImageViewController {
+                        wivc.waypoint = waypoint
+                    }else if let ivc = segue.destination as? ImageViewController {
                         ivc.imageURL = waypoint.imageURL
                         ivc.title = waypoint.name
                     }
